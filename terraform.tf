@@ -10,7 +10,7 @@ terraform {
   required_version = "~> 1.2"
 
   backend "s3" {
-    bucket = "terraforms-bucket"
+    bucket = "terraforms-buckets"
     key    = "states-veiculoservice"
     region = "us-east-2"
   }
