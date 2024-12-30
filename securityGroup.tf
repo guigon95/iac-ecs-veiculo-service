@@ -1,8 +1,8 @@
 # Load balancer security group. CIDR and port ingress can be changed as required.
 resource "aws_security_group" "lb_security_group" {
-  name        = "Terraform-ECS-production-ALB-SG"
+  name        = "Terraform-ECS-veiculoservice-ALB-SG"
   description = "SG-ALB-registro-ponto"
-  vpc_id = aws_vpc.production-vpc.id
+  vpc_id = aws_vpc.veiculoservice-vpc.id
 
 }
 

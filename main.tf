@@ -9,7 +9,7 @@ resource "aws_ecs_task_definition" "ecs_task_def" {
  [
    {
      "name": "${var.cluster_task}",
-     "image": "${aws_ecr_repository.production.repository_url}:latest",
+     "image": "${aws_ecr_repository.veiculoservice.repository_url}:latest",
      "environment": [
      {
         "name": "aws.key",
@@ -49,7 +49,7 @@ resource "aws_ecs_task_definition" "ecs_task_def" {
 
 
 resource "aws_iam_role" "ecs_task_exec_role" {
- name               = "ecs_task_exec_role_production"
+ name               = "ecs_task_exec_role_veiculoservice"
  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
@@ -89,7 +89,7 @@ resource "aws_ecs_service" "registro-ponto-ecs-service" {
 
 
  network_configuration {
-   subnets          = [for subnet in aws_subnet.production-private-subnet : subnet.id]
+   subnets          = [for subnet in aws_subnet.veiculoservice-private-subnet : subnet.id]
    security_groups  = [aws_security_group.ecs_security_group.id]
  }
 }
@@ -99,31 +99,31 @@ resource "aws_apigatewayv2_vpc_link" "vpclink_apigw_to_alb" {
   name        = "vpclink_apigw_to_alb"
   security_group_ids = []
 
-  subnet_ids = [for subnet in aws_subnet.production-public-subnet : subnet.id]
+  subnet_ids = [for subnet in aws_subnet.veiculoservice-public-subnet : subnet.id]
 }
 
 # IGW for the public subnet
-resource "aws_internet_gateway" "production-internet-gateway" {
-  vpc_id = aws_vpc.production-vpc.id
+resource "aws_internet_gateway" "veiculoservice-internet-gateway" {
+  vpc_id = aws_vpc.veiculoservice-vpc.id
 }
 
 # Route the public subnet traffic through the IGW
 resource "aws_route" "internet_access" {
-  route_table_id         = "${aws_vpc.production-vpc.main_route_table_id}"
+  route_table_id         = "${aws_vpc.veiculoservice-vpc.main_route_table_id}"
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = "${aws_internet_gateway.production-internet-gateway.id}"
+  gateway_id             = "${aws_internet_gateway.veiculoservice-internet-gateway.id}"
 }
 
 # Create a NAT gateway with an EIP for each private subnet to get internet connectivity
 resource "aws_eip" "gw" {
   count      = 2
   domain        = "vpc"
-  depends_on = [aws_internet_gateway.production-internet-gateway]
+  depends_on = [aws_internet_gateway.veiculoservice-internet-gateway]
 }
 
 resource "aws_nat_gateway" "registro-ponto-nat-gateway" {
   count      = 2
-  subnet_id     = "${element(aws_subnet.production-public-subnet.*.id, count.index)}"
+  subnet_id     = "${element(aws_subnet.veiculoservice-public-subnet.*.id, count.index)}"
   allocation_id = "${element(aws_eip.gw.*.id, count.index)}"
 }
 
