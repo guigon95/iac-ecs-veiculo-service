@@ -31,11 +31,11 @@ variable "image_url" {
 }
 
 variable "memory" {
-  default = "512"
+  default = "1024"
 }
 
 variable "cpu" {
-  default = "256"
+  default = "512"
 }
 
 variable "cluster_name" {
