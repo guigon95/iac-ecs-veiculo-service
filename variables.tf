@@ -19,7 +19,7 @@ variable "secret_key" {
 
 variable "desired_capacity" {
   description = "desired number of running nodes"
-  default     = 2
+  default     = 1
 }
 
 variable "container_port" {
