@@ -71,7 +71,7 @@ resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole_policy" {
  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-resource "aws_ecs_service" "registro-ponto-ecs-service" {
+resource "aws_ecs_service" "veiculo-service-ecs-service" {
  name                = var.cluster_service
  cluster             = aws_ecs_cluster.ecs_cluster.id
  task_definition     = aws_ecs_task_definition.ecs_task_def.arn
@@ -121,7 +121,7 @@ resource "aws_eip" "gw" {
   depends_on = [aws_internet_gateway.veiculoservice-internet-gateway]
 }
 
-resource "aws_nat_gateway" "registro-ponto-nat-gateway" {
+resource "aws_nat_gateway" "veiculo-service-nat-gateway" {
   count      = 2
   subnet_id     = "${element(aws_subnet.veiculoservice-public-subnet.*.id, count.index)}"
   allocation_id = "${element(aws_eip.gw.*.id, count.index)}"
@@ -135,7 +135,7 @@ resource "aws_route_table" "private" {
 
   route {
     cidr_block = "0.0.0.0/0"
-    nat_gateway_id = "${element(aws_nat_gateway.registro-ponto-nat-gateway.*.id, count.index)}"
+    nat_gateway_id = "${element(aws_nat_gateway.veiculo-service-nat-gateway.*.id, count.index)}"
   }
 }
 
